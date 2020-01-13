@@ -75,11 +75,12 @@ function! quickfixsync#signs#update() abort
   let l:sign_bufnrs = sort(l:sign_bufnrs)
   let l:target_bufnrs = quickfixsync#utils#range#intersection(l:bufnrs, l:union_bufnrs)
 
-  let l:empty = {'signs':[]}
+  let l:bufnr2indexes = s:buildBufnr2IndexesByLoclist(l:locs)
   for l:bufnr in l:target_bufnrs
-    call s:updateBufferSigns(l:bufnr,
-      \ quickfixsync#utils#range#firstOr(l:signs, {t -> t.bufnr == l:bufnr}, l:empty).signs,
-      \ l:locs)
+    call s:updateBufferSigns(
+      \ l:bufnr, quickfixsync#utils#range#firstOr(l:signs, {t -> t.bufnr == l:bufnr}, {'signs':[]}).signs,
+      \ l:locs, get(l:bufnr2indexes, l:bufnr, [])
+      \ )
   endfor
 endfunction
 
@@ -101,20 +102,38 @@ function! s:undefineDefaultSigns() abort
   endfor
 endfunction
 
-function! s:updateBufferSigns(bufnr, buf_signs, locs) abort
+function! s:buildBufnr2IndexesByLoclist(locs) abort
+  " NOTE: for tuning, by locs list for same bufnr
+  " key:bufnr, value: loclist index array
+  let l:bufnr2indexes = {} 
+
+  for l:i in range(0, len(a:locs)-1)
+    let l:bufnr = a:locs[l:i].bufnr
+
+    if !has_key(l:bufnr2indexes, l:bufnr)
+      let l:bufnr2indexes[l:bufnr] = []
+    endif
+    call add(l:bufnr2indexes[l:bufnr], l:i)
+  endfor
+
+  return l:bufnr2indexes
+endfunction
+
+function! s:updateBufferSigns(bufnr, buf_signs, locs, buf_locIndexes) abort
   " remove unnecessary signs
   for l:x in a:buf_signs
-    if !quickfixsync#utils#range#any(a:locs, {t -> t.bufnr == a:bufnr && t.lnum == l:x.lnum})
+    if !quickfixsync#utils#range#any(a:buf_locIndexes, {t -> a:locs[t].lnum == l:x.lnum})
       call sign_unplace(l:x.group, {'id': l:x.id})
     endif
   endfor
+
   " add required signs
-  for l:x in a:locs
-    if l:x.bufnr != a:bufnr | continue | endif
-    if len(a:buf_signs) == 0 || !quickfixsync#utils#range#any(a:buf_signs, {t -> t.lnum == l:x.lnum})
-      let l:signname = s:signindex2name[s:type2signindex[l:x.type]]
+  let l:buf_signs_n = len(a:buf_signs)
+  for l:x in a:buf_locIndexes
+    if l:buf_signs_n == 0 || !quickfixsync#utils#range#any(a:buf_signs, {t -> t.lnum == a:locs[l:x].lnum})
+      let l:signname = s:signindex2name[s:type2signindex[a:locs[l:x].type]]
       call sign_place(0, '', l:signname, bufname(a:bufnr),
-        \ {'lnum': l:x.lnum, 'priority': 10})
+        \ {'lnum': a:locs[l:x].lnum, 'priority': 10})
     endif
   endfor
 endfunction
