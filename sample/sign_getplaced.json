@@ -1,0 +1,47 @@
+[
+  {
+    "signs": [
+      {
+        "lnum": 1,
+        "id": 75003,
+        "name": "Information",
+        "priority": 10,
+        "group": ""
+      },
+      {
+        "lnum": 31,
+        "id": 75058,
+        "name": "Error",
+        "priority": 10,
+        "group": ""
+      },
+      {
+        "lnum": 31,
+        "id": 75057,
+        "name": "Error",
+        "priority": 10,
+        "group": ""
+      },
+      {
+        "lnum": 31,
+        "id": 75056,
+        "name": "Error",
+        "priority": 10,
+        "group": ""
+      }
+    ],
+    "bufnr": 1
+  },
+  {
+    "signs": [
+      {
+        "lnum": 4,
+        "id": 75043,
+        "name": "Error",
+        "priority": 10,
+        "group": ""
+      }
+    ],
+    "bufnr": 2
+  }
+]
