@@ -1,6 +1,7 @@
 let s:enabled = 0
 
 let s:define = quickfixsync#include#_('define.vim')
+let s:loc = quickfixsync#include#_('loc.vim')
 
 if !hlexists('QFSyncErrorText')
   highlight link QFSyncErrorText Error
@@ -76,7 +77,7 @@ function! s:updateInternal(bufnrs) abort
 
   let l:target_bufnrs = quickfixsync#utils#range#intersection(a:bufnrs, l:union_bufnrs)
 
-  let l:bufnr2indexes = s:buildBufnr2IndexesByLoclist(l:locs)
+  let l:bufnr2indexes = s:loc.buildBufnr2IndexesByLoclist(l:locs)
   for l:bufnr in l:target_bufnrs
     call s:updateBufferSigns(
       \ l:bufnr, quickfixsync#utils#range#firstOr(l:signs, {t -> t.bufnr == l:bufnr}, {'signs':[]}).signs,
@@ -101,23 +102,6 @@ function! s:undefineDefaultSigns() abort
   for l:i in range(1, 4)
     call sign_undefine(s:define.default_signname_map[l:i])
   endfor
-endfunction
-
-function! s:buildBufnr2IndexesByLoclist(locs) abort
-  " NOTE: for tuning, by locs list for same bufnr
-  " key:bufnr, value: loclist index array
-  let l:bufnr2indexes = {} 
-
-  for l:i in range(0, len(a:locs)-1)
-    let l:bufnr = a:locs[l:i].bufnr
-
-    if !has_key(l:bufnr2indexes, l:bufnr)
-      let l:bufnr2indexes[l:bufnr] = []
-    endif
-    call add(l:bufnr2indexes[l:bufnr], l:i)
-  endfor
-
-  return l:bufnr2indexes
 endfunction
 
 function! s:updateBufferSigns(bufnr, buf_signs, locs, buf_locIndexes) abort

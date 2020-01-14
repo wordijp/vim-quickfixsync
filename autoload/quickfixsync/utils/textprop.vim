@@ -22,8 +22,9 @@ function! s:getAddedInternal(bufnr) abort
     \ {a, b -> a.lnum == b.lnum ? 0 : a.lnum > b.lnum ? 1 : -1})
 
   " normalize
-  let l:props = map(l:props, {_, v1 -> map(v1.list, {_, v2 -> extend({'lnum': v1.lnum}, v2)})})
-  let l:props = quickfixsync#utils#range#flatten(l:props)
+  " TODO: Enable after `prop_remove` support `col` field.
+  "let l:props = map(l:props, {_, v1 -> map(v1.list, {_, v2 -> extend({'lnum': v1.lnum}, v2)})})
+  "let l:props = quickfixsync#utils#range#flatten(l:props)
 
   return {
     \ 'bufnr': a:bufnr,

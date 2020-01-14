@@ -1,15 +1,13 @@
 let s:enabled = 0
 let s:timer = 0
 
-" TODO: highlight text
-" TODO: virtual text (for nvim)
-
 " ---
 
 function! quickfixsync#enable() abort
   if s:enabled | return | endif
 
   if g:quickfixsync_signs_enabled | call quickfixsync#signs#enable() | endif
+  if g:quickfixsync_textprop_enabled | call quickfixsync#textprop#enable() | endif
 
   " enable `autocmd BufReadPost quickfix ...` at startup.
   " NOTE: As long as you try, it won't fire unless a buffer is created.
@@ -19,7 +17,6 @@ function! quickfixsync#enable() abort
 
   augroup quickfixsync_event
     autocmd!
-    "autocmd BufWritePost * call s:bufWritePostHook()
     autocmd BufReadPost quickfix call s:quickfixBufReadPostHook()
     autocmd BufEnter * call s:bufEnterHook()
   augroup END
@@ -31,6 +28,8 @@ function! quickfixsync#disable() abort
   if !s:enabled | return | endif
 
   call quickfixsync#signs#disable()
+  call quickfixsync#textprop#disable()
+
   augroup quickfixsync_event
     autocmd!
   augroup END
@@ -40,21 +39,15 @@ endfunction
 
 function! quickfixsync#update() abort
   if g:quickfixsync_signs_enabled | call quickfixsync#signs#update() | endif
+  if g:quickfixsync_textprop_enabled | call quickfixsync#textprop#update() | endif
 endfunction
 
 function! quickfixsync#updateBuf(bufnr) abort
   if g:quickfixsync_signs_enabled | call quickfixsync#signs#updateBuf(a:bufnr) | endif
+  if g:quickfixsync_textprop_enabled | call quickfixsync#textprop#updateBuf(a:bufnr) | endif
 endfunction
 
 " ---
-
-"function! s:bufWritePostHook() abort
-"  let l:buf = bufnr('%')
-
-"  if !s:skip_file(l:buf)
-"    call quickfixsync#update()
-"  endif
-"endfunction
 
 function! s:quickfixBufReadPostHook() abort
   if s:timer > 0
