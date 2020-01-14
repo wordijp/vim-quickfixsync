@@ -56,6 +56,10 @@ function! quickfixsync#signs#disable() abort
 endfunction
 
 function! quickfixsync#signs#update() abort
+  if !s:enabled
+    call quickfixsync#signs#enable()
+  endif
+
   " exist bufnr list
   let l:bufnrs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
 
@@ -86,6 +90,8 @@ endfunction
 
 function! s:defineDefaultSigns() abort
   for l:i in range(1, 4)
+    " TODO: icon
+    " TODO: customize 'text'
     call sign_define(s:default_signname_map[l:i], {
       \ 'text': s:default_text_map[l:i],
       \ 'texthl': s:default_signname_map[l:i].'Text',
@@ -129,7 +135,7 @@ function! s:updateBufferSigns(bufnr, buf_signs, locs, buf_locIndexes) abort
   let l:buf_signs_n = len(a:buf_signs)
   for l:x in a:buf_locIndexes
     if l:buf_signs_n == 0 || !quickfixsync#utils#range#any(a:buf_signs, {t -> t.lnum == a:locs[l:x].lnum})
-      let l:signname = s:signindex2name[s:type2signindex[a:locs[l:x].type]]
+      let l:signname = s:signindex2name[get(s:type2signindex, a:locs[l:x].type, '1')]
       call sign_place(0, '', l:signname, bufname(a:bufnr),
         \ {'lnum': a:locs[l:x].lnum, 'priority': 10})
     endif

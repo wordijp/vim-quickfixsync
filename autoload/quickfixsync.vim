@@ -29,7 +29,7 @@ function! quickfixsync#disable() abort
 endfunction
 
 function! quickfixsync#update() abort
-  if s:supports_signs | call quickfixsync#signs#update() | endif
+  if g:quickfixsync_signs_enabled | call quickfixsync#signs#update() | endif
 endfunction
 
 " ---
