@@ -21,6 +21,7 @@ function! quickfixsync#enable() abort
     autocmd!
     "autocmd BufWritePost * call s:bufWritePostHook()
     autocmd BufReadPost quickfix call s:quickfixBufReadPostHook()
+    autocmd BufEnter * call s:bufEnterHook()
   augroup END
 
   let s:enabled = 1
@@ -39,6 +40,10 @@ endfunction
 
 function! quickfixsync#update() abort
   if g:quickfixsync_signs_enabled | call quickfixsync#signs#update() | endif
+endfunction
+
+function! quickfixsync#updateBuf(bufnr) abort
+  if g:quickfixsync_signs_enabled | call quickfixsync#signs#updateBuf(a:bufnr) | endif
 endfunction
 
 " ---
@@ -86,6 +91,13 @@ function! s:quickfixBufReadPostHook() abort
   let s:timer = timer_start(50, l:tickMonitor.checkUpdate, {'repeat': -1})
 endfunction
 
+function! s:bufEnterHook() abort
+  let l:bufnr = bufnr('')
+  if !s:skip_file(l:bufnr)
+    call quickfixsync#updateBuf(l:bufnr)
+  endif
+endfunction
+
 function! s:enableInitialQuickfixBufReadPost() abort
   if get(g:, 'quickfixsync_qftype', '') =~ 'Location'
     call s:createLocationBuffer()
@@ -120,11 +132,11 @@ function! s:createQFBuffer() abort
   endtry
 endfunction
 
-"function! s:skip_file(buf) abort
-"  " see) vim-syntastic/syntastic `s:_skip_file`
-"  " NOTE: Minimal checks to unnecessary updates.
-"  " (Only the target is updated anyway)
-"  return (getbufvar(a:buf, '&buftype') !=# '')
-"    \ || getwinvar(0, '&diff')
-"    \ || getwinvar(0, '&previewwindow')
-"endfunction
+function! s:skip_file(buf) abort
+  " see) vim-syntastic/syntastic `s:_skip_file`
+  " NOTE: Minimal checks to unnecessary updates.
+  " (Only the target is updated anyway)
+  return (getbufvar(a:buf, '&buftype') !=# '')
+    \ || getwinvar(0, '&diff')
+    \ || getwinvar(0, '&previewwindow')
+endfunction

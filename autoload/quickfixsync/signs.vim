@@ -56,12 +56,22 @@ function! quickfixsync#signs#disable() abort
 endfunction
 
 function! quickfixsync#signs#update() abort
+  " exist bufnr list
+  let l:bufnrs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  call s:updateInternal(l:bufnrs)
+endfunction
+
+function! quickfixsync#signs#updateBuf(bufnr) abort
+  let l:bufnrs = [a:bufnr]
+  call s:updateInternal([a:bufnr])
+endfunction
+
+" ---
+
+function! s:updateInternal(bufnrs) abort
   if !s:enabled
     call quickfixsync#signs#enable()
   endif
-
-  " exist bufnr list
-  let l:bufnrs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
 
   let l:locs = []
   if get(g:, 'quickfixsync_qftype', '') =~ 'Location'
@@ -75,7 +85,7 @@ function! quickfixsync#signs#update() abort
   let l:loc_bufnrs = map(copy(l:locs), 'v:val.bufnr')
   let l:union_bufnrs = uniq(sort(extend(l:sign_bufnrs, l:loc_bufnrs), {a, b -> a == b ? 0 : a > b ? 1 : -1}))
 
-  let l:target_bufnrs = quickfixsync#utils#range#intersection(l:bufnrs, l:union_bufnrs)
+  let l:target_bufnrs = quickfixsync#utils#range#intersection(a:bufnrs, l:union_bufnrs)
 
   let l:bufnr2indexes = s:buildBufnr2IndexesByLoclist(l:locs)
   for l:bufnr in l:target_bufnrs
@@ -85,8 +95,6 @@ function! quickfixsync#signs#update() abort
       \ )
   endfor
 endfunction
-
-" ---
 
 function! s:defineDefaultSigns() abort
   for l:i in range(1, 4)
