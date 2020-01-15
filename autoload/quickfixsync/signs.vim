@@ -79,7 +79,10 @@ function! s:updateInternal(bufnrs) abort
   else
     let l:locs = getqflist()
   endif
-  let l:signs = sign_getplaced('', {'group': '*'})
+
+  "let l:signs = sign_getplaced({'group': '*'}) " can not...
+  let l:signs = map(copy(a:bufnrs), "sign_getplaced(v:val, {'group': '*'})[0]")
+  let l:signs = filter(l:signs, '!empty(v:val.signs)')
 
   let l:sign_bufnrs = map(copy(l:signs), 'v:val.bufnr')
   let l:loc_bufnrs = map(copy(l:locs), 'v:val.bufnr')
