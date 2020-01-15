@@ -73,7 +73,7 @@ function! quickfixsync#signs#update() abort
 
   let l:sign_bufnrs = map(copy(l:signs), 'v:val.bufnr')
   let l:loc_bufnrs = map(copy(l:locs), 'v:val.bufnr')
-  let l:union_bufnrs = uniq(sort(extend(l:sign_bufnrs, l:loc_bufnrs)))
+  let l:union_bufnrs = uniq(sort(extend(l:sign_bufnrs, l:loc_bufnrs), {a, b -> a == b ? 0 : a > b ? 1 : -1}))
 
   let l:target_bufnrs = quickfixsync#utils#range#intersection(l:bufnrs, l:union_bufnrs)
 
