@@ -1,21 +1,7 @@
 let s:enabled = 0
 
-let s:type2signindex = {
-  \ 'E': 1,
-  \  1 : 1,
-  \ 'W': 2,
-  \  2 : 2,
-  \ 'I': 3,
-  \  3 : 3,
-  \ 'H': 4,
-  \  4 : 4,
-  \ }
-let s:default_signname_map = {
-  \ 1: 'QFSyncError',
-  \ 2: 'QFSyncWarning',
-  \ 3: 'QFSyncInformation',
-  \ 4: 'QFSyncHint',
-  \ }
+let s:define = quickfixsync#include#_('define.vim')
+
 if !hlexists('QFSyncErrorText')
   highlight link QFSyncErrorText Error
 endif
@@ -35,7 +21,7 @@ let s:default_text_map = {
   \ 3: 'I',
   \ 4: 'H',
   \ }
-let s:signindex2name = extend(s:default_signname_map, g:quickfixsync_signname_map)
+let s:signindex2name = extend(s:define.default_signname_map, g:quickfixsync_signname_map)
 
 " ---
 
@@ -103,17 +89,17 @@ function! s:defineDefaultSigns() abort
   for l:i in range(1, 4)
     " TODO: icon
     " TODO: customize 'text'
-    call sign_define(s:default_signname_map[l:i], {
+    call sign_define(s:define.default_signname_map[l:i], {
       \ 'text': s:default_text_map[l:i],
-      \ 'texthl': s:default_signname_map[l:i].'Text',
-      \ 'linehl':s:default_signname_map[l:i].'Line'
+      \ 'texthl': s:define.default_signname_map[l:i].'Text',
+      \ 'linehl':s:define.default_signname_map[l:i].'Line'
       \ })
   endfor
 endfunction
 
 function! s:undefineDefaultSigns() abort
   for l:i in range(1, 4)
-    call sign_undefine(s:default_signname_map[l:i])
+    call sign_undefine(s:define.default_signname_map[l:i])
   endfor
 endfunction
 
@@ -146,7 +132,7 @@ function! s:updateBufferSigns(bufnr, buf_signs, locs, buf_locIndexes) abort
   let l:buf_signs_n = len(a:buf_signs)
   for l:x in a:buf_locIndexes
     if l:buf_signs_n == 0 || !quickfixsync#utils#range#any(a:buf_signs, {t -> t.lnum == a:locs[l:x].lnum})
-      let l:signname = s:signindex2name[get(s:type2signindex, a:locs[l:x].type, '1')]
+      let l:signname = s:signindex2name[get(s:define.type2signindex, a:locs[l:x].type, '1')]
       call sign_place(0, '', l:signname, bufname(a:bufnr),
         \ {'lnum': a:locs[l:x].lnum, 'priority': 10})
     endif
