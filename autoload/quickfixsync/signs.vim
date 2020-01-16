@@ -132,7 +132,7 @@ function! s:updateBufferSigns(bufnr, buf_signs, locs, buf_locIndexes) abort
   let l:buf_signs_n = len(a:buf_signs)
   for l:x in a:buf_locIndexes
     if l:buf_signs_n == 0 || !quickfixsync#utils#range#any(a:buf_signs, {t -> t.lnum == a:locs[l:x].lnum})
-      let l:signname = s:signindex2name[get(s:define.type2signindex, a:locs[l:x].type, '1')]
+      let l:signname = s:signindex2name[s:define.type2signindex[a:locs[l:x].type]]
       call sign_place(0, '', l:signname, bufname(a:bufnr),
         \ {'lnum': a:locs[l:x].lnum, 'priority': 10})
     endif

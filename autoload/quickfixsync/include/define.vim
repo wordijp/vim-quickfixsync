@@ -1,4 +1,5 @@
 let s:type2signindex = {
+  \ '' : 1,
   \ 'E': 1,
   \  1 : 1,
   \ 'W': 2,
