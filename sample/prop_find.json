@@ -1,0 +1,9 @@
+{
+  "lnum": 14,
+  "id": 0,
+  "col": 7,
+  "end": 1,
+  "type": "vim_lsp_hl_1_clangd",
+  "length": 3,
+  "start": 1
+}

@@ -56,12 +56,12 @@ function! quickfixsync#utils#range#intersection(lst1, lst2) abort
 endfunction
 
 " @note: required sorted and nested list
-function! quickfixsync#utils#range#stableFlattenAndUniq(lst, ...) abort
+function! quickfixsync#utils#range#flattenAndUniq(lst, ...) abort
   let l:Fcmp = get(a:, 1, {a, b -> a == b ? 0 : a > b ? 1 : -1})
 
   let l:n = len(a:lst)
   if l:n == 0 | return [] | endif
-  if l:n == 1 | return a:lst[0] | endif
+  if l:n == 1 | return s:ary(a:lst[0]) | endif
 
   let l:iota = range(0, l:n-1)
 
@@ -70,7 +70,7 @@ function! quickfixsync#utils#range#stableFlattenAndUniq(lst, ...) abort
     \  'EXIST': 1,
     \  'END': 2,
     \ }
-  let l:its = map(copy(l:iota), {_, v -> [l:enum.NONE, quickfixsync#utils#iterator#new(a:lst[v])]})
+  let l:its = map(copy(l:iota), {_, v -> [l:enum.NONE, quickfixsync#utils#iterator#new(s:ary(a:lst[v]))]})
 
   let l:ret = []
   while 1
@@ -101,6 +101,16 @@ function! quickfixsync#utils#range#stableFlattenAndUniq(lst, ...) abort
   return l:ret
 endfunction
 
+function! quickfixsync#utils#range#flatten(lst) abort
+  let l:lst = []
+  for l:x in a:lst
+    let l:lst += s:ary(l:x)
+  endfor
+  return l:lst
+endfunction
+
+" ---
+
 function! s:min_index(lst, fcmp) abort
   let l:n = len(a:lst)
   if l:n == 0 | return -1 | endif
@@ -114,4 +124,8 @@ function! s:min_index(lst, fcmp) abort
   endfor
 
   return l:min_i
+endfunction
+
+function! s:ary(elm) abort
+  return (type(a:elm) == 3) ? a:elm : [a:elm]
 endfunction

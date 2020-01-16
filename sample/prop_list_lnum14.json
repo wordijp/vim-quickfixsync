@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "col": 6,
+    "end": 1,
+    "type": "vim_lsp_hl_1_clangd",
+    "length": 3,
+    "start": 1
+  },
+  {
+    "id": 0,
+    "col": 6,
+    "end": 1,
+    "type": "vim-lsp-semantic-clangd-0",
+    "length": 3,
+    "start": 1
+  },
+  {
+    "id": 0,
+    "col": 13,
+    "end": 1,
+    "type": "vim_lsp_hl_1_clangd",
+    "length": 2,
+    "start": 1
+  }
+]

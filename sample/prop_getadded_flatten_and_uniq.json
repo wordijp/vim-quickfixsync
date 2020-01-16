@@ -1,0 +1,75 @@
+[
+  {
+    "bufnr": 1,
+    "props": [
+      {
+        "lnum": 12,
+        "list": [
+          {
+            "id": 0,
+            "col": 3,
+            "end": 1,
+            "type": "vim-lsp-semantic-clangd-1",
+            "length": 5,
+            "start": 1
+          },
+          {
+            "id": 0,
+            "col": 3,
+            "end": 1,
+            "type": "vim_lsp_hl_1_clangd",
+            "length": 5,
+            "start": 1
+          },
+          {
+            "id": 0,
+            "col": 16,
+            "end": 1,
+            "type": "vim_lsp_hl_2_clangd",
+            "length": 2,
+            "start": 1
+          }
+        ]
+      },
+      {
+        "lnum": 14,
+        "list": [
+          {
+            "id": 0,
+            "col": 7,
+            "end": 1,
+            "type": "vim_lsp_hl_1_clangd",
+            "length": 3,
+            "start": 1
+          },
+          {
+            "id": 0,
+            "col": 14,
+            "end": 1,
+            "type": "vim_lsp_hl_1_clangd",
+            "length": 4,
+            "start": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "bufnr": 3,
+    "props": [
+      {
+        "lnum": 13,
+        "list": [
+          {
+            "id": 0,
+            "col": 2,
+            "end": 1,
+            "type": "vim_lsp_hl_1_clangd",
+            "length": 1,
+            "start": 1
+          }
+        ]
+      }
+    ]
+  }
+]
