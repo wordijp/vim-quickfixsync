@@ -22,6 +22,7 @@ let s:default_text_map = {
   \ 3: 'I',
   \ 4: 'H',
   \ }
+let s:text_map = extend(s:default_text_map, g:quickfixsync_text_map)
 let s:signindex2name = extend(s:define.default_signname_map, g:quickfixsync_signname_map)
 
 " ---
@@ -89,9 +90,8 @@ endfunction
 function! s:defineDefaultSigns() abort
   for l:i in range(1, 4)
     " TODO: icon
-    " TODO: customize 'text'
     call sign_define(s:define.default_signname_map[l:i], {
-      \ 'text': s:default_text_map[l:i],
+      \ 'text': s:text_map[l:i],
       \ 'texthl': s:define.default_signname_map[l:i].'Text',
       \ 'linehl':s:define.default_signname_map[l:i].'Line'
       \ })
