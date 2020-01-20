@@ -4,6 +4,7 @@ let s:define = quickfixsync#include#_('define.vim')
 let s:loc = quickfixsync#include#_('loc.vim')
 
 let s:prop_type_prefix = 'vim_qfsync_hl_'
+let s:type2propname = map(copy(s:define.type2signindex), 's:prop_type_prefix . v:val')
 
 if !hlexists('QFSyncErrorHighlight')
   highlight link QFSyncErrorHighlight Error
@@ -80,7 +81,7 @@ endfunction
 
 function! s:defineDefaultProps() abort
   for l:i in range(1, 4)
-    call prop_type_add(s:type2propname(l:i), {
+    call prop_type_add(s:type2propname[l:i], {
       \ 'highlight': s:define.default_signname_map[l:i] . 'Highlight',
       \ 'combine': v:true,
       \ })
@@ -89,19 +90,15 @@ endfunction
 
 function! s:undefineDefaultProps() abort
   for l:i in range(1, 4)
-    call prop_type_delete(s:type2propname(l:i))
+    call prop_type_delete(s:type2propname[l:i])
   endfor
-endfunction
-
-function! s:type2propname(type) abort
-  return s:prop_type_prefix . s:define.type2signindex[a:type]
 endfunction
 
 function! s:updateBufferProps(bufnr, buf_props, locs, buf_locIndexes) abort
   " remove unnecessary props
   for l:x in a:buf_props
     let l:lnum_buf_locIndexes = filter(copy(a:buf_locIndexes), {_, v -> a:locs[v].lnum == l:x.lnum})
-    if quickfixsync#utils#range#any(l:x.list, {t -> !quickfixsync#utils#range#any(l:lnum_buf_locIndexes, {u -> t.col == a:locs[u].col})})
+    if quickfixsync#utils#range#any(l:x.list, {t -> !quickfixsync#utils#range#any(l:lnum_buf_locIndexes, {u -> t.col == a:locs[u].col && s:type2propname[a:locs[u].type] == t.type})})
     " TODO: Fix after support `col` field by `prop_remove()`
     "if !quickfixsync#utils#range#any(a:buf_locIndexes, {t -> a:locs[t].lnum == l:x.lnum && a:locs[t].col == l:x.col})}) " <- I want to do
 
@@ -117,7 +114,7 @@ function! s:updateBufferProps(bufnr, buf_props, locs, buf_locIndexes) abort
 
       " repair out of target
       for l:y in l:x.list
-        if quickfixsync#utils#range#any(a:buf_locIndexes, {t -> a:locs[t].lnum == l:x.lnum && a:locs[t].col == l:y.col})
+        if quickfixsync#utils#range#any(a:buf_locIndexes, {t -> a:locs[t].lnum == l:x.lnum && a:locs[t].col == l:y.col && s:type2propname[a:locs[t].type] == l:y.type})
           call prop_add(l:x.lnum, l:y.col, {
             \ 'end_lnum': l:x.lnum,
             \ 'end_col': l:y.col + l:y.length,
@@ -133,7 +130,6 @@ function! s:updateBufferProps(bufnr, buf_props, locs, buf_locIndexes) abort
   let l:buf_props_n = len(a:buf_props)
   for l:x in a:buf_locIndexes
     if l:buf_props_n == 0 || !quickfixsync#utils#range#any(a:buf_props, {t -> t.lnum == a:locs[l:x].lnum && quickfixsync#utils#range#any(t.list, {u -> a:locs[l:x].col == u.col})})
-      let l:propname = s:type2propname(a:locs[l:x].type)
       " NOTE: `end_col` is +1, because quickfix list has no `length`.
 
       let l:line = getbufline(a:bufnr, a:locs[l:x].lnum)
@@ -145,7 +141,7 @@ function! s:updateBufferProps(bufnr, buf_props, locs, buf_locIndexes) abort
         \ 'end_lnum': a:locs[l:x].lnum,
         \ 'end_col': l:col + 1,
         \ 'bufnr': a:bufnr,
-        \ 'type': l:propname,
+        \ 'type': s:type2propname[a:locs[l:x].type],
         \ })
     endif
   endfor
