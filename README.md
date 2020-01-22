@@ -11,12 +11,12 @@ For example, the result of QuickRun.
 ![demo](./demo/demo_quickrun.gif)
 
 
-Also, some LSP plugins have this feature, but if there is a discrepancy in the display using the quickfix list, this plugin will correct it to the correct result.
-
 For example, LanguageClient-neovim for dart with analysis_server.
 
 <img src="./demo/demo_dart_unused.gif"> → 
 <img src="./demo/demo_dart_used.gif">
+
+Also, if there is an inconsistency in the display using the quickfix list for the LSP plugin, this plugin will fix it to the correct result.
 
 # Installing
 
