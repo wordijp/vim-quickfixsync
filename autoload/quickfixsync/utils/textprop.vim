@@ -55,12 +55,16 @@ function! s:getAddedInternalByProptype(bufnr, proptype) abort
     if empty(l:found)
       break
     endif
-
+    if l:found.lnum < l:lnum
+      let l:lnum += 1
+      continue
+    endif
+    
     call add(l:added, {
       \ 'lnum': l:found.lnum,
       \ 'list': prop_list(l:found.lnum, {'bufnr': a:bufnr})
       \ })
-
+    
     let l:lnum = l:found.lnum + 1
   endwhile
 
