@@ -3,19 +3,6 @@ let s:enabled = 0
 let s:define = quickfixsync#include#_('define.vim')
 let s:loc = quickfixsync#include#_('loc.vim')
 
-if !hlexists('QFSyncErrorText')
-  highlight link QFSyncErrorText Error
-endif
-if !hlexists('QFSyncWarningText')
-  highlight link QFSyncWarningText Todo
-endif
-if !hlexists('QFSyncInformationText')
-  highlight link QFSyncInformationText Normal
-endif
-if !hlexists('QFSyncHintText')
-  highlight link QFSyncHintText Normal
-endif
-
 let s:default_text_map = {
   \ 1: 'E',
   \ 2: 'W',
@@ -24,11 +11,25 @@ let s:default_text_map = {
   \ }
 let s:text_map = extend(s:default_text_map, g:quickfixsync_text_map)
 let s:signindex2name = extend(s:define.default_signname_map, g:quickfixsync_signname_map)
+let s:sign_group = 'vim_quickfixsync'
 
 " ---
 
 function! quickfixsync#signs#enable() abort
   if s:enabled | return | endif
+
+  if !hlexists('QFSyncErrorText')
+    highlight link QFSyncErrorText Error
+  endif
+  if !hlexists('QFSyncWarningText')
+    highlight link QFSyncWarningText Todo
+  endif
+  if !hlexists('QFSyncInformationText')
+    highlight link QFSyncInformationText Normal
+  endif
+  if !hlexists('QFSyncHintText')
+    highlight link QFSyncHintText Normal
+  endif
 
   call s:defineDefaultSigns()
 
@@ -68,8 +69,7 @@ function! s:updateInternal(bufnrs) abort
     let l:locs = getqflist()
   endif
 
-  "let l:signs = sign_getplaced({'group': '*'}) " can not...
-  let l:signs = map(copy(a:bufnrs), "sign_getplaced(v:val, {'group': '*'})[0]")
+  let l:signs = map(copy(a:bufnrs), "sign_getplaced(v:val, {'group': s:sign_group})[0]")
   let l:signs = filter(l:signs, '!empty(v:val.signs)')
 
   let l:sign_bufnrs = map(copy(l:signs), 'v:val.bufnr')
@@ -117,7 +117,7 @@ function! s:updateBufferSigns(bufnr, buf_signs, locs, buf_locIndexes) abort
   for l:x in a:buf_locIndexes
     if l:buf_signs_n == 0 || !quickfixsync#utils#range#any(a:buf_signs, {t -> t.lnum == a:locs[l:x].lnum})
       let l:signname = s:signindex2name[s:define.type2signindex[a:locs[l:x].type]]
-      call sign_place(0, '', l:signname, bufname(a:bufnr),
+      call sign_place(0, s:sign_group, l:signname, bufname(a:bufnr),
         \ {'lnum': a:locs[l:x].lnum, 'priority': 10})
     endif
   endfor

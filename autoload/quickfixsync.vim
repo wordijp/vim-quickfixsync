@@ -6,8 +6,10 @@ let s:timer = 0
 function! quickfixsync#enable() abort
   if s:enabled | return | endif
 
-  if g:quickfixsync_signs_enabled | call quickfixsync#signs#enable() | endif
-  if g:quickfixsync_textprop_enabled | call quickfixsync#textprop#enable() | endif
+  " comment out due to highlight link delay
+  " NOTE: auto enable in update
+  "if g:quickfixsync_signs_enabled | call quickfixsync#signs#enable() | endif
+  "if g:quickfixsync_textprop_enabled | call quickfixsync#textprop#enable() | endif
 
   " enable `autocmd BufReadPost quickfix ...` at startup.
   " NOTE: As long as you try, it won't fire unless a buffer is created.

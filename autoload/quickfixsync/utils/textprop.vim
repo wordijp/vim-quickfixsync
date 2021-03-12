@@ -1,15 +1,13 @@
-" @param bufnr
-function! quickfixsync#utils#textprop#prop_getadded(...) abort
-  let l:bufnr = get(a:, 1, 0)
-  let l:bufnrs = (l:bufnr != 0) ? [l:bufnr] : filter(range(1, bufnr('$')), 'buflisted(v:val)')
-  return filter(map(l:bufnrs, 's:getAddedInternal(v:val)'), '!empty(v:val.props)')
+function! quickfixsync#utils#textprop#prop_getadded(propnames) abort
+  let l:bufnrs =  filter(range(1, bufnr('$')), 'buflisted(v:val)')
+  return filter(map(l:bufnrs, 's:getAddedInternal(v:val, a:propnames)'), '!empty(v:val.props)')
 endfunction
 
 " ---
 
-function! s:getAddedInternal(bufnr) abort
+function! s:getAddedInternal(bufnr, propnames) abort
   let l:props = []
-  for l:x in prop_type_list()
+  for l:x in a:propnames
     let l:added = s:getAddedInternalByProptype(a:bufnr, l:x)
     if !empty(l:added)
       call add(l:props, l:added)

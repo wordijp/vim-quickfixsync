@@ -6,23 +6,23 @@ let s:loc = quickfixsync#include#_('loc.vim')
 let s:prop_type_prefix = 'vim_qfsync_hl_'
 let s:type2propname = map(copy(s:define.type2signindex), 's:prop_type_prefix . v:val')
 
-if !hlexists('QFSyncErrorHighlight')
-  highlight link QFSyncErrorHighlight Error
-endif
-if !hlexists('QFSyncWarningHighlight')
-  highlight link QFSyncWarningHighlight Todo
-endif
-if !hlexists('QFSyncInformationHighlight')
-  highlight link QFSyncInformationHighlight Normal
-endif
-if !hlexists('QFSyncHintHighlight')
-  highlight link QFSyncHintHighlight Normal
-endif
-
 " ---
 
 function! quickfixsync#textprop#enable() abort
   if s:enabled | return | endif
+
+  if !hlexists('QFSyncErrorHighlight')
+    highlight link QFSyncErrorHighlight Error
+  endif
+  if !hlexists('QFSyncWarningHighlight')
+    highlight link QFSyncWarningHighlight Todo
+  endif
+  if !hlexists('QFSyncInformationHighlight')
+    highlight link QFSyncInformationHighlight Normal
+  endif
+  if !hlexists('QFSyncHintHighlight')
+    highlight link QFSyncHintHighlight Normal
+  endif
 
   call s:defineDefaultProps()
 
@@ -62,7 +62,8 @@ function! s:updateInternal(bufnrs) abort
     let l:locs = getqflist()
   endif
 
-  let l:props = quickfixsync#utils#textprop#prop_getadded()
+  let l:propnames = map(range(1, 4), 's:type2propname[v:val]')
+  let l:props = quickfixsync#utils#textprop#prop_getadded(l:propnames)
 
   let l:prop_bufnrs = map(copy(l:props), 'v:val.bufnr')
   let l:loc_bufnrs = map(copy(l:locs), 'v:val.bufnr')
